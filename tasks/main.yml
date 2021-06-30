@@ -1,0 +1,43 @@
+---
+# tasks file for ansible-hatop
+- name: Git checkout HATOP Project
+  ansible.builtin.git:
+    repo: 'https://github.com/feurix/hatop.git'
+    dest: /opt/hatop
+    version: master
+
+- name: Change file HATOP executable ownership, group and permissions
+  ansible.builtin.file:
+    path: /opt/hatop/bin/hatop
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Change file HATOP manual ownership, group and permissions
+  ansible.builtin.file:
+    path: /opt/hatop/man/hatop.1
+    owner: root
+    group: root
+    mode: '0644'
+    
+- name: Create a symbolic link for HATOP executable 
+  ansible.builtin.file:
+    src: /opt/hatop/bin/hatop
+    dest: /usr/local/bin/hatop
+    owner: root
+    group: root
+    state: link
+
+- name: Create a symbolic link for HATOP manual 
+  ansible.builtin.file:
+    src: /opt/hatop/man/hatop.1
+    dest: /usr/local/share/man/man1/hatop.1
+    owner: root
+    group: root
+    state: link
+
+- name: Compress regular file /opt/hatop/man/hatop.1 into /usr/local/share/man/man1/hatop.1.tar.gz
+  community.general.archive:
+    path: /opt/hatop/man/hatop.1
+    dest: /usr/local/share/man/man1/hatop.1.tar.gz
+    format: gz
